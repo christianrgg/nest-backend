@@ -1,9 +1,10 @@
-// 1. Instalar globalmente la aplicación: npm i -g @nestjs/cli
-// 2. Crear la aplicación nest: nest new nest-backend
-// 3. Desinstalar con: npm uninstall prettier eslint-config-prettier eslint-plugin-prettier
-// 4. Con el panel de control recargar la ventana
-// 5. Ejecutar la aplicación npm run start:dev
-// 6. Postman enviar un get send a la url http://localhost:3000/
+// CONFIURACIÓN MONGO DB
+// 7. Instalar docker y hacer ajustes en bios
+// 8. Ver las imagenes de mongo docker a usar en la siguiente liga https://hub.docker.com/_/mongo
+// 9. Crear un archivo en la raiz de esta carpeta docker-compose.yml y colocar lo requerido
+// 10. Ejecutar en la terminal el siguiente comando docker compose up -d y esto montara la imagen en el contenedor
+// 11. Agregar al git ignore mongo/
+
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
