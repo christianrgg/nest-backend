@@ -1,7 +1,5 @@
-// 20. Para las variables de entorno instalar npm i @nestjs/config
-// 21. Agregar a los imports ConfigModule.forRoot()
-// 22. Crear constructor e imprimir el proceso .env constructor(){ console.log(process.env);} ver en consola corriendo mongo_url
-// 23. Cambiar la liga de conexion por el proceso .env . mongo
+// 24. En el archivo .env agregar con una diagonal el nombre de la base de datos de mongo /mean-db
+// 25. Bajar la aplicación y volverla a subir con npm run start:dev
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
