@@ -1,10 +1,11 @@
+// 12. Generar un recurso completo de autenticación con comando nest g resource auth
+// 13. Seleccionar REST API
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [AuthModule],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
