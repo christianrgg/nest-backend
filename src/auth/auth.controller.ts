@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-// 36. Actualizar las importaciones y los nombres de las propiedades y clases.
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
