@@ -12,7 +12,7 @@ export class User {
     name: string;
 
     @Prop({minLength:8, required:true})
-    password: string;
+    password?: string;
 
     @Prop({default:true})
     isActivate: boolean;

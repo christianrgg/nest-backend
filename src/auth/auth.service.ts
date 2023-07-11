@@ -4,24 +4,35 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
+import * as bcryptjs from 'bcryptjs'
+// 49. Instalar npm i bcryptjs
+// 50 Importar todo como bcryptjs de bcryptjs
+// 51. Hacer la instalación con referencia a typescript npm i --save-dev @types/bcryptjs
 
 @Injectable()
 export class AuthService {
-  // 43. Inyectar el UserModel en el servicio(ver en documentación cats.service). Hacer las importaciones y modificar los cats por User
+
   constructor(
     @InjectModel(User.name) private userModel: Model<User>
   ){}
   
-  // 44. Agregar Agregar los tipos de datos que debe regresar
   async create(createUserDto: CreateUserDto): Promise<User> {
     console.log(createUserDto);
-    // 45. Crear constante para crear usuario con una nueva instancia pasandole el createUserDto  
-    // 46. Retornar y grabar
-    // 47. Los dos pasos anteriores meterlos dentro de un try and catch asignar async a create y await al return
-    // 48. Agregar al cath el error 11000 y los demas errores para errores controlados
     try {
-      const newUser = new this.userModel(createUserDto);
-      return await newUser.save(); 
+      // 52. Crear una constante en la que se desestructure el usuario, se obtenga su password y el resto lo almacene un variable userDta
+      const {password, ...userData} = createUserDto;
+      //53. Crear una instancia del modelo usuario, encriptar con bcryptjs la contraseña con 10 rondas hash y copiar las propiedades restantes del user data.
+      const newUser = new this.userModel({
+        password: bcryptjs.hashSync(password,10),
+        ...userData
+      });
+
+      // 54. El user que se devuelve en postman y mongo, primero quitar el returny dejar la espera de usuario.
+      await newUser.save(); 
+      //55. Desestructurar el newUser por el password e  indicar que el valor no se utilizará más adelante y el resto de las propiedades creando una nueva instancia y pasandola a JSON.
+      const {password:_, ...user} = newUser.toJSON();
+      // 56. retornar el usuario sin el password
+      return user
     } catch (error) {
       if (error.code === 11000){
         throw new BadRequestException(`${createUserDto.email} already exist!`)
