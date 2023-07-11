@@ -2,8 +2,8 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema()
 export class User { 
-
-    //_id:string;
+    // 92. Descomentar para que typescript permita el register
+    _id:string;
 
     @Prop({unique:true, required:true})
     email: string;

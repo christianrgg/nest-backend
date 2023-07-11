@@ -1,16 +1,16 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs'
-import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
+import { LoginResponse } from './interfaces/login-response';
+// 90. Arreglar al importaciones al index
+import { RegisterUserDto, LoginDto, UpdateAuthDto } from './dto/index';
 
-// 70. Instalar JWT npm install --save @nestjs/jwt
-// 71. Inyectar e importar en constructor private jwtService: JwtService
+
 
 @Injectable()
 export class AuthService {
@@ -41,8 +41,23 @@ export class AuthService {
     }
   }
 
+  // 83. Crear el metodo register
+  // 89. Agregar la propiedad y el tipo
+  async register(registerDto: RegisterUserDto):Promise<LoginResponse> {
+    // 91. Crear contante para usuario (Ahora acepta al registerdto porque son igual que el login o createdto, pero en caso de no aceptarlo hacer desestructuración) {email: registerDto.email} etc
+    const user = await this.create(registerDto);
+    console.log({user});
+    // 93. Hacer el llamado del getjwt y agregar lo necesario para el registro
+    return{
+      user,
+      token: this.getJwtToken({id: user._id})
+    }
+  }
   
-  async login(loginDto:LoginDto){
+  
+  
+  // 82. Agregar el tipo de dato que devolvera
+  async login(loginDto:LoginDto):Promise<LoginResponse>{
  
     const {email, password} = loginDto;
 
@@ -56,13 +71,12 @@ export class AuthService {
       }
       
       const {password:_, ...rest}= user.toJSON();
-      // 74. Llamar al metodo jwt 
+
       return {
         user: rest,
         token: this.getJwtToken({id:user.id}),
       }
   }
-  // 75. En el .env generar una clave secreta para para el jwt JWT_SEED=
 
   findAll() {
     return `This action returns all auth`;
@@ -80,9 +94,7 @@ export class AuthService {
     return `This action removes a #${id} auth`;
   }
   
-  // 72. Hacer metodo para JWT
   getJwtToken(payload:JwtPayload){
-    //73. Crear la constante para generar token
     const token = this.jwtService.sign(payload);
     return token;
   }
