@@ -1,13 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs'
-// 49. Instalar npm i bcryptjs
-// 50 Importar todo como bcryptjs de bcryptjs
-// 51. Hacer la instalación con referencia a typescript npm i --save-dev @types/bcryptjs
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,19 +17,14 @@ export class AuthService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     console.log(createUserDto);
     try {
-      // 52. Crear una constante en la que se desestructure el usuario, se obtenga su password y el resto lo almacene un variable userDta
       const {password, ...userData} = createUserDto;
-      //53. Crear una instancia del modelo usuario, encriptar con bcryptjs la contraseña con 10 rondas hash y copiar las propiedades restantes del user data.
       const newUser = new this.userModel({
         password: bcryptjs.hashSync(password,10),
         ...userData
       });
 
-      // 54. El user que se devuelve en postman y mongo, primero quitar el returny dejar la espera de usuario.
       await newUser.save(); 
-      //55. Desestructurar el newUser por el password e  indicar que el valor no se utilizará más adelante y el resto de las propiedades creando una nueva instancia y pasandola a JSON.
       const {password:_, ...user} = newUser.toJSON();
-      // 56. retornar el usuario sin el password
       return user
     } catch (error) {
       if (error.code === 11000){
@@ -39,6 +32,34 @@ export class AuthService {
       }
       throw new InternalServerErrorException('Something terrible happen!!');
     }
+  }
+
+  // 58. Crear el servicio para login que reciba un loginDto de tipo LoginDto
+  async login(loginDto:LoginDto){
+    //64. Mostrar en consola el loginDto console.log({loginDto});
+    // 65. Desestructurar logindtp
+    const {email, password} = loginDto;
+
+    // 66. Verificar si el email del usuario existe en la base de datos
+     const user = await this.userModel.findOne({email});
+    // 67. Agregar condicional si el usuario no existe o la contraseña no es correcta
+      if(!user){
+        throw new UnauthorizedException('Not valid credentials - email')
+      }
+      if(!bcryptjs.compareSync(password, user.password)){
+        throw new UnauthorizedException('Not valid credentials - password')
+      }
+      
+      // 68. Crear propiedad para desestructurar el json y olvidar el password
+      const {password:_, ...rest}= user.toJSON();
+      //69 returnar el rest en un user y un token pendiente de creación
+      return {
+        user: rest,
+        token: 'ABC-123'
+      }
+    
+    
+
   }
 
   findAll() {

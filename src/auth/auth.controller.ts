@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -10,6 +11,14 @@ export class AuthController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.authService.create(createUserDto);
+  }
+// 57. Crear el metodo post de login para verificar correo en el endpoint /login
+// 61. Recibir el body con el decorador @body
+// 62. Agregar propiedad loginDto de tipo LoginDto
+// 63. Regresar loginDto 
+  @Post('/login')
+  login(@Body() loginDto: LoginDto){
+    return this.authService.login(loginDto);
   }
 
   @Get()
