@@ -12,10 +12,7 @@ export class AuthController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.authService.create(createUserDto);
   }
-// 57. Crear el metodo post de login para verificar correo en el endpoint /login
-// 61. Recibir el body con el decorador @body
-// 62. Agregar propiedad loginDto de tipo LoginDto
-// 63. Regresar loginDto 
+
   @Post('/login')
   login(@Body() loginDto: LoginDto){
     return this.authService.login(loginDto);

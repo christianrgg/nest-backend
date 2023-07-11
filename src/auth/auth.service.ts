@@ -6,12 +6,19 @@ import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs'
 import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interfaces/jwt-payload';
+
+// 70. Instalar JWT npm install --save @nestjs/jwt
+// 71. Inyectar e importar en constructor private jwtService: JwtService
 
 @Injectable()
 export class AuthService {
 
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) 
+    private userModel: Model<User>,
+    private jwtService: JwtService
   ){}
   
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -34,15 +41,13 @@ export class AuthService {
     }
   }
 
-  // 58. Crear el servicio para login que reciba un loginDto de tipo LoginDto
+  
   async login(loginDto:LoginDto){
-    //64. Mostrar en consola el loginDto console.log({loginDto});
-    // 65. Desestructurar logindtp
+ 
     const {email, password} = loginDto;
 
-    // 66. Verificar si el email del usuario existe en la base de datos
      const user = await this.userModel.findOne({email});
-    // 67. Agregar condicional si el usuario no existe o la contraseña no es correcta
+ 
       if(!user){
         throw new UnauthorizedException('Not valid credentials - email')
       }
@@ -50,17 +55,14 @@ export class AuthService {
         throw new UnauthorizedException('Not valid credentials - password')
       }
       
-      // 68. Crear propiedad para desestructurar el json y olvidar el password
       const {password:_, ...rest}= user.toJSON();
-      //69 returnar el rest en un user y un token pendiente de creación
+      // 74. Llamar al metodo jwt 
       return {
         user: rest,
-        token: 'ABC-123'
+        token: this.getJwtToken({id:user.id}),
       }
-    
-    
-
   }
+  // 75. En el .env generar una clave secreta para para el jwt JWT_SEED=
 
   findAll() {
     return `This action returns all auth`;
@@ -76,5 +78,12 @@ export class AuthService {
 
   remove(id: number) {
     return `This action removes a #${id} auth`;
+  }
+  
+  // 72. Hacer metodo para JWT
+  getJwtToken(payload:JwtPayload){
+    //73. Crear la constante para generar token
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 }
