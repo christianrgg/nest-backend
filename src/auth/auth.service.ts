@@ -73,8 +73,7 @@ export class AuthService {
   findAll():Promise<User[]> {
     return this.userModel.find();
   }
-
-  // 110. Con el id retornado, crear un metodo que devuelva el usuario.
+  
   async findById(id:string){
     const user = await this.userModel.findById(id);
     const {password, ...rest} = user.toJSON();
