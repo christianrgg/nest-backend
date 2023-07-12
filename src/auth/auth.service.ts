@@ -7,7 +7,6 @@ import * as bcryptjs from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponse } from './interfaces/login-response';
-// 90. Arreglar al importaciones al index
 import { RegisterUserDto, LoginDto, UpdateAuthDto } from './dto/index';
 
 
@@ -41,13 +40,9 @@ export class AuthService {
     }
   }
 
-  // 83. Crear el metodo register
-  // 89. Agregar la propiedad y el tipo
   async register(registerDto: RegisterUserDto):Promise<LoginResponse> {
-    // 91. Crear contante para usuario (Ahora acepta al registerdto porque son igual que el login o createdto, pero en caso de no aceptarlo hacer desestructuración) {email: registerDto.email} etc
     const user = await this.create(registerDto);
     console.log({user});
-    // 93. Hacer el llamado del getjwt y agregar lo necesario para el registro
     return{
       user,
       token: this.getJwtToken({id: user._id})
@@ -56,13 +51,10 @@ export class AuthService {
   
   
   
-  // 82. Agregar el tipo de dato que devolvera
   async login(loginDto:LoginDto):Promise<LoginResponse>{
  
     const {email, password} = loginDto;
-
-     const user = await this.userModel.findOne({email});
- 
+    const user = await this.userModel.findOne({email});
       if(!user){
         throw new UnauthorizedException('Not valid credentials - email')
       }
@@ -78,8 +70,9 @@ export class AuthService {
       }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  // 94. Que el metodo regrese un arreglo con todos los usuarios y su tipo de datos.
+  findAll():Promise<User[]> {
+    return this.userModel.find();
   }
 
   findOne(id: number) {

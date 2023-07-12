@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// 87. Cambiar las importaciones hacia el index
 import { CreateUserDto, LoginDto, RegisterUserDto, UpdateAuthDto} from './dto/index';
+import { AuthGuard } from './guards/auth.guard';
 
 
 @Controller('auth')
@@ -17,13 +17,15 @@ export class AuthController {
   login(@Body() loginDto: LoginDto){
     return this.authService.login(loginDto);
   }
-  // 84. Crear el metodo para el register
-  // 88. Hacer las adecuaciones para el dto creado para este metodo
+
   @Post('/register')
   register(@Body() registerDto: RegisterUserDto){
     return this.authService.register(registerDto);
   }
 
+
+  // 99. usar decorador usegard y mandar el guard a usar
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.authService.findAll();
