@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginDto, RegisterUserDto, UpdateAuthDto} from './dto/index';
 import { AuthGuard } from './guards/auth.guard';
@@ -23,12 +23,15 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-
-  // 99. usar decorador usegard y mandar el guard a usar
+// 107. Obtener el id de este lado
   @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.authService.findAll();
+  findAll(@Request() req:Request) {
+    // 108. console.log(req); en consola ver la request y encontrar el id
+    // 109. Despues de analizar meter el id en una constante y retornar el id del usuario.
+    const user = req['user'];
+    return user
+    // return this.authService.findAll();
   }
 
   @Get(':id')

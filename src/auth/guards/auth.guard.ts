@@ -1,31 +1,50 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
+import { JwtPayload } from '../interfaces/jwt-payload';
+import { AuthService } from '../auth.service';
 
-
-// 94. Generar el guards nest g gu <path/nombre>
 @Injectable()
 export class AuthGuard implements CanActivate {  
-  // 96. Crear constructor y hacer la inyeccion de jwtservice (de la docuementacion)
-  constructor(private jwtService: JwtService){ }
+  // 111. inyectar el servicio en el constructor
+  constructor(
+    private jwtService: JwtService,
+    private authService: AuthService
+    ){}
   
-  
-  // 95. Ver las tres formas en la que puede trabajar, boolean, promesa u observable, dejar solo boolean
-  canActivate(context: ExecutionContext): Promise<boolean> {
-    //97 crear la constante request
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    // console.log({request});
-    // 101. Traer propiedad token de la documentación
     const token = this.extractTokenFromHeader(request);
-    console.log({token});
-    // 102. Obterner con post un token en url localhost:3000/auth/login con un usuario existente en la base de datos 
-    // 103. Probar la autorización con postman en nueva ventana get, url:localhost:3000/auth, Authorization, tipo: Bearer Token y pegar el token
 
-    // 98. Retornar la promesa con true
-    return Promise.resolve(true);
+    // 104. Hacer condicional si no hay token
+    if (!token) {
+      throw new UnauthorizedException('There is no bearer token');
+    }
+    //105. Agregar async por el await, el tipo de verifyasync e importarlo y modificar el secret, meterlo en un trycatch por si hay error.
+    try {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+        token, {secret: process.env.JWT_SEED}
+      );  
+      // console.log({payload});
+
+      // 112. Hacer consulta del usuario
+      const user = await this.authService.findById(payload.id)
+      // 113. Hacer las condicionales si no hay usuario y si esta activo (por posibles bloqueos)
+      if(!user) throw new UnauthorizedException('User does not exist')
+      if(!user.isActivate) throw new UnauthorizedException('User is not active')
+
+      // request['user'] = payload.id;
+      // 113. Si todo esta ok
+      request['user'] = user;
+    } catch (error) {
+      throw new UnauthorizedException()
+    }
+
+    // console.log({token});
+    // 106. Como es un metodo asyncrono puede regresar un true
+    return true;
   }
 
-  // 100. Traer el metodo extraertoken de la documentación, autorización ponerla entre llaves y comillas simples y quitar el punto
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers['authorization']?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
